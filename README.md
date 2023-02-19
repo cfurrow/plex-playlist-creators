@@ -1,5 +1,6 @@
 
 Inspired by https://gist.github.com/blacktwin/397f07724abebd1223ba6ea644ea1669
+(my original gist https://gist.github.com/cfurrow/13a062359bd83ac17a38f8c4fcd3bab2)
 
 ## How to use
 Be sure you have Pyton 3.9+ installed, then run:
