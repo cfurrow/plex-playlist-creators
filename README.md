@@ -18,13 +18,17 @@ PLEX_URL="https://192.168.0.100:32400"
 PLEX_TOKEN=your-token-here
 ```
 
-Now you should be able to run the script:
+Now you should be able to run either script:
 
 ```
 python cartoon_playlist.py
+# or this one:
+python aired_today_playlist.py
+# or this one:
+python aired_today_playlist.py '2019-02-10'
 ```
 
-You should see output like this:
+You should see output like this depending on the script you ran:
 
 ```
 python3.10 cartoon_playlist.py
