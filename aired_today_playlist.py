@@ -64,10 +64,13 @@ with no_ssl_verification():
 
   # Remove old Aired Today Playlists
   for playlist in plex.playlists():
-    if playlist.title == TODAY_PLAY_TITLE.startswith('Aired Today') and not TODAY_PLAY_TITLE:
-      r = requests.delete('{}/playlists/{}?X-Plex-Token={}'.format(baseurl, TODAY_PLAY_TITLE, token))
-      print('Removing old Aired Today Playlists ')
-      print(r)
+    if playlist.title.startswith('Aired Today') and not playlist.title == TODAY_PLAY_TITLE:
+      r = requests.delete('{}/playlists/{}?X-Plex-Token={}'.format(baseurl, playlist.key.split('/playlists/')[1], token))
+      if r.status_code == 204:
+        print('Removing old Aired Today Playlists ')
+      else:
+        print('Failed to remove old Aired Today Playlist ')
+        print(r)
     elif playlist.title == TODAY_PLAY_TITLE:
       print('{} already exists. No need to make again.'.format(TODAY_PLAY_TITLE))
       exit(0)
