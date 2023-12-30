@@ -1,16 +1,18 @@
 """
 Create a Plex Playlist with what was aired on this today's month-day, sort by oldest first.
-If Playlist from yesterday exists delete and create today's.
-If today's Playlist exists exit.
 
 Make sure PLEX_URL is set in your ENV (e.g. http://192.168.1.72:32400)
 Make sure PLEX_TOKEN is set in your ENV (get from app.plex.tv and open your dev console while playing a video)
 
 To build a playlist for a given date:
-python aired_today_playlist.py '2019-02-10'
+  python aired_today_playlist.py '2019-02-10'
 
 To build a playlist for today's date:
-python aired_today_playlist.py
+  python aired_today_playlist.py
+
+To delete old Aired Today Playlists:
+  python aired_today_playlist.py --delete
+  python aired_today_playlist.py --delete '2019-02-10'
 """
 
 import os, operator, time, sys, datetime
@@ -18,6 +20,7 @@ import requests
 from dotenv import load_dotenv
 from plexapi.server import PlexServer
 from no_ssl_verification import no_ssl_verification
+import argparse
 
 load_dotenv(verbose=True)
 
@@ -32,6 +35,18 @@ if 'PLEX_TOKEN' not in os.environ:
 baseurl = os.environ['PLEX_URL']
 token = os.environ['PLEX_TOKEN']
 
+parser = argparse.ArgumentParser()
+parser.add_argument('--delete', action='store_true', help='Delete old Aired Today Playlists')
+parser.add_argument('date', nargs='?', help='Date to build playlist for')
+args = parser.parse_args()
+
+# Parse date argument from command line, if present
+if args.date:
+  date_arg = datetime.datetime.strptime(args.date, '%Y-%m-%d')
+  date_in_seconds = time.mktime(date_arg.timetuple())
+  today = time.gmtime(date_in_seconds)
+else:
+  today = time.gmtime(time.time())
 
 with no_ssl_verification():
   plex = None
@@ -51,23 +66,15 @@ with no_ssl_verification():
   child_lst = []
   aired_lst = []
 
-  if len(sys.argv) > 1:
-    date_arg = datetime.datetime.strptime(sys.argv[1], '%Y-%m-%d')
-    date_in_seconds = time.mktime(date_arg.timetuple())
-    today = time.gmtime(date_in_seconds)
-  else:
-    today = time.gmtime(time.time())
-
-
   TODAY_PLAY_TITLE = 'Aired Today {}-{}'.format(today.tm_mon, today.tm_mday)
   print('Building a playlist: {}'.format(TODAY_PLAY_TITLE))
 
   # Remove old Aired Today Playlists
   for playlist in plex.playlists():
-    if playlist.title.startswith('Aired Today') and not playlist.title == TODAY_PLAY_TITLE:
+    if args.delete and playlist.title.startswith('Aired Today') and not playlist.title == TODAY_PLAY_TITLE:
       r = requests.delete('{}/playlists/{}?X-Plex-Token={}'.format(baseurl, playlist.key.split('/playlists/')[1], token))
       if r.status_code == 204:
-        print('Removing old Aired Today Playlists ')
+        print('Removing old Aired Today Playlist: {}'.format(playlist.title))
       else:
         print('Failed to remove old Aired Today Playlist ')
         print(r)
