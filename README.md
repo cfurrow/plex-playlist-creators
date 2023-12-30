@@ -22,21 +22,33 @@ Now you should be able to run either script:
 
 ```sh
 python cartoon_playlist.py
+
 # or this one:
 python aired_today_playlist.py
+
 # or this one:
 python aired_today_playlist.py '2019-02-10'
+
+# or this one (which will delete other 'aired today' playlists, and then create a new one for the date given):
+python aired_today_playlist.py --delete '2019-02-10'
 ```
 
 You should see output like this depending on the script you ran:
 
-```
-python3.10 cartoon_playlist.py
-Saturday Morning Cartoons already exists. Deleting it and will rebuild.
+```sh
+python cartoon_playlist.py
 Saturday Morning Cartoons already exists. Deleting it and will rebuild.
 <Collection:5043:80s-Cartoons>
+<Collection:5044:90s-Cartoons>
 ...snipped...
 Adding 30 cartoons to playlist.
+
+
+python aired_today_playlist.py
+Building a playlist: Aired Today 12-30
+Removing old Aired Today Playlists
+Removing old Aired Today Playlists
+Adding 28 videos to playlist.
 ```
 
 Now go checkout your Plex server, and there will be a new playlist called "Saturday Morning Cartoons".
