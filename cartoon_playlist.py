@@ -29,8 +29,12 @@ with no_ssl_verification():
 
   for playlist in plex.playlists():
     if playlist.title == CARTOON_PLAYLIST_TITLE:
-      r = requests.delete('{}/playlists/{}?X-Plex-Token={}'.format(baseurl, CARTOON_PLAYLIST_TITLE, token))
-      print('{} already exists. Deleting it and will rebuild.'.format(CARTOON_PLAYLIST_TITLE))
+      r = requests.delete('{}/playlists/{}?X-Plex-Token={}'.format(baseurl, playlist.key.split('/playlists/')[1], token))
+      if r.status_code == 204:
+        print('{} already exists. Deleting it and will rebuild.'.format(CARTOON_PLAYLIST_TITLE))
+      else:
+        print('Failed to remove old Playlist ')
+        print(r)
 
 
   tv_shows_section = plex.library.section('TV Shows')
